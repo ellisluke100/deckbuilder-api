@@ -1,0 +1,30 @@
+name: "deckbuilder"
+
+services:
+  mongo:
+    image: "mongo:latest"
+    container_name: "${COMPOSE_PROJECT_NAME}-mongo"
+    ports:
+      - "27017:27017"
+  
+  # Init container to pre-populate the MongoDB deckbuilder database
+  # Note: purely for local testing purposes of course!
+  # Note: ideally I'd have an image already with pymongo on it but alas..
+  mongo-init:
+    image: "python:3.13-alpine3.22"
+    container_name: "${COMPOSE_PROJECT_NAME}-mongo-init"
+    depends_on:
+      mongo:
+        condition: service_started
+    volumes:
+      - ./scripts:/var/lib/scripts
+    command: /bin/sh -c "python -m pip install pymongo && python /var/lib/scripts/populate_db.py"
+    environment:
+      MONGO_ADDR: "mongodb://${COMPOSE_PROJECT_NAME}-mongo:27017"
+
+# Syncs to /code when a change is made (presumably its a volume mount, could be cool for FastAPI app container?)
+# develop:
+#   watch:
+#     - action: sync
+#       path: .
+#       target: /code
