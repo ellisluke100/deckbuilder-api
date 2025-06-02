@@ -22,6 +22,19 @@ services:
     environment:
       MONGO_ADDR: "mongodb://${COMPOSE_PROJECT_NAME}-mongo:27017"
 
+  deckbuilder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}-api"
+    depends_on:
+      mongo:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_ADDR: "mongodb://${COMPOSE_PROJECT_NAME}-mongo:27017"
+
 # Syncs to /code when a change is made (presumably its a volume mount, could be cool for FastAPI app container?)
 # develop:
 #   watch:

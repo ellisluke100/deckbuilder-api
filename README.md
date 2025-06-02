@@ -12,6 +12,32 @@ To-Do:
 - Full containerized environment
 - Deck strength analytics
 
+## Prerequisites
+
+- Python >=3.13
+- Poetry
+- Docker
+
+## Test environment
+
+Setup environment:
+
+```bash 
+docker compose up -d --build 
+```
+
+Make a request, e.g.:
+
+```bash
+curl -X GET localhost:8000/cards/ | jq
+```
+
+Tear down environment:
+
+```bash
+docker compose down -v 
+```
+
 ## Technologies used
 
 - Python

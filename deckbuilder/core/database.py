@@ -1,7 +1,8 @@
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
+import os
 
-# client = AsyncMongoClient("mongo://localhost:8000/") # TODO - configurable
+
 client: AsyncMongoClient = None
 
 
@@ -20,7 +21,8 @@ def mongo_startup():
     Open MongoDB connection
     """
     global client
-    client = AsyncMongoClient("mongodb://localhost:27017")
+    mongo_addr = os.getenv("MONGO_ADDR", "mongodb://localhost:27017") # TODO - real config
+    client = AsyncMongoClient(mongo_addr)
 
 
 def mongo_shutdown():
