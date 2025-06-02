@@ -1,6 +1,7 @@
-""" 
+"""
 Endpoints relating to card resources.
 """
+
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from deckbuilder.schemas import CardResponse, CardListResponse
@@ -17,9 +18,11 @@ router = APIRouter(prefix="/cards", tags=["cards"])
     response_model=CardListResponse,
     response_model_by_alias=False,
 )
-async def get_cards(cards: Annotated[CardListResponse, Depends(get_cards_dep)]) -> CardListResponse:
-    """ 
-    Get cards endpoint. 
+async def get_cards(
+    cards: Annotated[CardListResponse, Depends(get_cards_dep)],
+) -> CardListResponse:
+    """
+    Get cards endpoint.
     """
     # ? Note: Pydantic will do ANOTHER validation / conversion to CardListResponse, because we've defined the response model AND are converting it here
     return cards
@@ -33,8 +36,10 @@ async def get_cards(cards: Annotated[CardListResponse, Depends(get_cards_dep)]) 
     response_model=CardResponse,
     response_model_by_alias=False,
 )
-async def get_card_by_id(card : Annotated[CardResponse, Depends(get_card_by_id_dep)]) -> CardResponse:
-    """ 
-    Get a card by id endpoint. 
+async def get_card_by_id(
+    card: Annotated[CardResponse, Depends(get_card_by_id_dep)],
+) -> CardResponse:
+    """
+    Get a card by id endpoint.
     """
     return card

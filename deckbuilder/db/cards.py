@@ -9,20 +9,20 @@ class CardsDatabaseAdapter:
         self._db = db
 
     async def read_one(self, id: str) -> Optional[CardDB]:
-        """ Read a single card from the database.
+        """Read a single card from the database.
 
         Args:
             id (str): Card ID.
 
         Returns:
             Optional[CardDB]: The retrieved card or None if it could not be retrieved.
-        """        
+        """
         result = await self._db.get_collection("cards").find_one({"_id": ObjectId(id)})
 
         return CardDB(**result) if result else None
 
     async def read_multiple(self, limit: int, skip: int) -> list[CardDB]:
-        """ Read multiple cards from the database.
+        """Read multiple cards from the database.
 
         Args:
             limit (int): Maximum number of cards returned.
@@ -30,7 +30,7 @@ class CardsDatabaseAdapter:
 
         Returns:
             list[CardDB]: List of retrieved cards.
-        """        
+        """
         results = (
             await self._db.get_collection("cards")
             .find(limit=limit, skip=skip)

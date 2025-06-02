@@ -6,12 +6,12 @@ client: AsyncMongoClient = None
 
 
 def get_db() -> AsyncDatabase:
-    """ Get a database connection.
+    """Get a database connection.
 
     Returns:
         AsyncDatabase: Database connection.
     """
-    
+
     return client.get_database("deckbuilder")
 
 
@@ -32,4 +32,4 @@ def mongo_shutdown():
         return
 
     client.close()  # Smelly warning about not awaiting this
-    client = None # Make sure we don't try and use it again
+    client = None  # Make sure we don't try and use it again

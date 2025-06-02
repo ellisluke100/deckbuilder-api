@@ -13,6 +13,8 @@ from deckbuilder.schemas import (
     DeckDetailResponse,
 )
 
+# TODO - split this file out or something
+# TODO - make reusable deps - theres a lot of code reuse in here
 
 #########
 # CARDS #
@@ -20,9 +22,9 @@ from deckbuilder.schemas import (
 
 
 async def get_cards_dep(
-    limit: int = 10, skip: int = 0, db = Depends(get_db)
+    limit: int = 10, skip: int = 0, db=Depends(get_db)
 ) -> CardListResponse:
-    """ Get cards.
+    """Get cards.
 
     Args:
         limit (int, optional): Query parameter for restricting number of card results returned. Defaults to 10.
@@ -31,7 +33,7 @@ async def get_cards_dep(
 
     Returns:
         CardListResponse: Model for list of cards.
-    """    
+    """
     adapter = CardsDatabaseAdapter(db=db)
 
     results = await adapter.read_multiple(limit, skip)
@@ -42,7 +44,7 @@ async def get_cards_dep(
 
 
 async def get_card_by_id_dep(id: str, db=Depends(get_db)) -> CardResponse:
-    """ Get card by it's ID.
+    """Get card by it's ID.
 
     Args:
         id (str): ID of the card to get.
@@ -53,7 +55,7 @@ async def get_card_by_id_dep(id: str, db=Depends(get_db)) -> CardResponse:
 
     Returns:
         CardResponse: Model for returning a card.
-    """    
+    """
     adapter = CardsDatabaseAdapter(db=db)
 
     result = await adapter.read_one(id)
@@ -66,8 +68,10 @@ async def get_card_by_id_dep(id: str, db=Depends(get_db)) -> CardResponse:
     return CardResponse(**result.model_dump())
 
 
-async def get_cards_by_id(card_ids: list[str], db = Depends(get_db)) -> list[CardResponse]:
-    """ Get multiple cards by their IDs.
+async def get_cards_by_id(
+    card_ids: list[str], db=Depends(get_db)
+) -> list[CardResponse]:
+    """Get multiple cards by their IDs.
 
     Args:
         card_ids (list[str]): List of card IDs.
@@ -78,7 +82,7 @@ async def get_cards_by_id(card_ids: list[str], db = Depends(get_db)) -> list[Car
 
     Returns:
         list[CardResponse]: List of card models to return.
-    """    
+    """
     card_adapter = CardsDatabaseAdapter(db=db)
 
     cards = []
@@ -88,10 +92,9 @@ async def get_cards_by_id(card_ids: list[str], db = Depends(get_db)) -> list[Car
         if not card:
             # ! User is trying to get a deck here; if a card can't be found, do we actually just raise a 404 or just not have a card view there
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Card {id} not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Card {id} not found."
             )
-        
+
         cards.append(CardResponse(**card.model_dump()))
 
     return cards
@@ -105,7 +108,7 @@ async def get_cards_by_id(card_ids: list[str], db = Depends(get_db)) -> list[Car
 async def get_decks_dep(
     limit: int = 10, skip: int = 0, db=Depends(get_db)
 ) -> DeckListResponse:
-    """ Get decks.
+    """Get decks.
 
     Args:
         limit (int, optional): Query parameter for restricting number of deck results returned. Defaults to 10.
@@ -114,7 +117,7 @@ async def get_decks_dep(
 
     Returns:
         DeckListResponse: List of decks.
-    """    
+    """
     adapter = DeckDatabaseAdapter(db=db)
 
     results = await adapter.read_multiple(limit, skip)
@@ -124,8 +127,8 @@ async def get_decks_dep(
     )
 
 
-async def get_deck_by_id_dep(id: str, db = Depends(get_db)) -> DeckDetailResponse:
-    """ Get a deck by it's ID.
+async def get_deck_by_id_dep(id: str, db=Depends(get_db)) -> DeckDetailResponse:
+    """Get a deck by it's ID.
 
     Args:
         id (str): ID of the deck to get.
@@ -136,15 +139,14 @@ async def get_deck_by_id_dep(id: str, db = Depends(get_db)) -> DeckDetailRespons
 
     Returns:
         DeckDetailResponse: Detail view of the deck retrieved.
-    """    
+    """
     adapter = DeckDatabaseAdapter(db=db)
 
     result = await adapter.read_one(id)
 
     if not result:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Deck {id} not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Deck {id} not found."
         )
 
     cards = await get_cards_by_id(result.cards, db)
@@ -153,7 +155,7 @@ async def get_deck_by_id_dep(id: str, db = Depends(get_db)) -> DeckDetailRespons
 
 
 async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckResponse:
-    """ Create a new deck.
+    """Create a new deck.
 
     Args:
         deck (DeckCreateRequest): Request containing info about deck to create.
@@ -161,7 +163,7 @@ async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckRe
 
     Returns:
         DeckResponse: Deck retrieved.
-    """    
+    """
     adapter = DeckDatabaseAdapter(db=db)
 
     result = await adapter.create_one(DeckDB(**deck.model_dump()))
@@ -170,7 +172,7 @@ async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckRe
 
 
 async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:
-    """ Delete a deck.
+    """Delete a deck.
 
     Args:
         id (str): Deck ID
@@ -178,7 +180,7 @@ async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:
 
     Raises:
         HTTPException: 404 if the deck could not be found.
-    """    
+    """
     adapter = DeckDatabaseAdapter(db=db)
 
     if not (await adapter.read_one(id)):
@@ -207,7 +209,7 @@ async def update_deck_dep(
 
     Returns:
         DeckResponse: The updated Deck
-    """    
+    """
     adapter = DeckDatabaseAdapter(db=db)
     fields = update_fields.model_dump(exclude_unset=True)
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, Secret
 from deckbuilder.models import CardKeyword
 from bson import ObjectId
 
@@ -13,6 +13,7 @@ class CardResponse(BaseModel):
     """
     Schema for returning a Card.
     """
+
     id: str = Field(alias="_id")
     name: str = Field()
     cost: int = Field(gt=0)
@@ -24,9 +25,10 @@ class CardResponse(BaseModel):
 
 
 class CardListResponse(BaseModel):
-    """ 
+    """
     Schema for returning a lsit of Cards.
     """
+
     cards: list[CardResponse]
 
 
@@ -39,6 +41,7 @@ class DeckCreateRequest(BaseModel):
     """
     Schema for creating a Deck.
     """
+
     name: str = Field()
     cards: list[str] = Field(max_length=6, default=[])  # List of IDs
 
@@ -47,6 +50,7 @@ class DeckUpdateRequest(BaseModel):
     """
     Schema for updating a Deck
     """
+
     name: str = Field(default=None)  # Rename
     cards: list[str] = Field(
         max_length=6, default=[]
@@ -57,6 +61,7 @@ class DeckResponse(BaseModel):
     """
     Schema for returning a Deck.
     """
+
     id: str = Field(alias="_id")
     name: str = Field()
     cards: list[str] = Field(max_length=6)
@@ -68,6 +73,7 @@ class DeckDetailResponse(BaseModel):
     """
     Schema for returning a Deck.
     """
+
     id: str = Field(alias="_id")
     name: str = Field()
     cards: list[CardResponse] = Field(max_length=6)
@@ -79,4 +85,21 @@ class DeckListResponse(BaseModel):
     """
     Schema for returning a list of Decks.
     """
+
     decks: list[DeckResponse] = Field()
+
+
+#########
+# Users #
+#########
+
+# TODO Use Pydantic secret field perhaps
+
+
+class UserCreateRequest(BaseModel):
+    """
+    Schema for creating a User.
+    """
+
+    username: str = Field()
+    password: str = Field()
