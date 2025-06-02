@@ -166,10 +166,7 @@ async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckRe
 
     result = await adapter.create_one(DeckDB(**deck.model_dump()))
 
-    # ! Should this really contain the cards? I've put IDs in my created object, so the IDs should get returned?
-    cards = await get_cards_by_id(result.cards, db)
-
-    return DeckResponse(**result.model_dump(exclude=["cards"]), cards=cards)
+    return DeckResponse(**result.model_dump())
 
 
 async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:

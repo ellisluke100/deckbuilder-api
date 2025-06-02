@@ -17,6 +17,7 @@ router = APIRouter(prefix="/decks", tags=["decks"])
     description="Get a deck by it's ID",
     response_description="The retrieved deck",
     response_model=DeckDetailResponse,
+    response_model_by_alias=False,
     status_code=status.HTTP_200_OK,
 )
 async def get_deck_by_id(
@@ -33,7 +34,8 @@ async def get_deck_by_id(
     description="Get multiple decks.",
     response_description="List of retrieved decks.",
     response_model=DeckListResponse,
-    status_code=status.HTTP_200_OK,
+    response_model_by_alias=False,
+    status_code=status.HTTP_200_OK
 )
 async def get_decks(decks: Annotated[DeckListResponse, Depends(get_decks_dep)]):
     """ 
