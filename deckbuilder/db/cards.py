@@ -4,32 +4,33 @@ from typing import Optional
 from bson import ObjectId
 
 
-# ! - can we split generic stuff out into base?
 class CardsDatabaseAdapter:
     def __init__(self, db: AsyncDatabase):
         self._db = db
 
-    # ! Should it be expecting a str here? Or an ObjectId?
     async def read_one(self, id: str) -> Optional[CardDB]:
-        """Read a single card from the database.
+        """ Read a single card from the database.
 
         Args:
-            id (str): _description_
+            id (str): Card ID.
 
         Returns:
-            Optional[CardDB]: _description_
-        """
+            Optional[CardDB]: The retrieved card or None if it could not be retrieved.
+        """        
         result = await self._db.get_collection("cards").find_one({"_id": ObjectId(id)})
 
         return CardDB(**result) if result else None
 
     async def read_multiple(self, limit: int, skip: int) -> list[CardDB]:
-        """Read multiple cards from the database.
+        """ Read multiple cards from the database.
 
         Args:
-            limit (int, optional): _description_. Defaults to 10.
-            skip (int, optional): _description_. Defaults to 0.
-        """
+            limit (int): Maximum number of cards returned.
+            skip (int): Number to seek ahead in the returned cards.
+
+        Returns:
+            list[CardDB]: List of retrieved cards.
+        """        
         results = (
             await self._db.get_collection("cards")
             .find(limit=limit, skip=skip)

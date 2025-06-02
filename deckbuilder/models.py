@@ -14,7 +14,6 @@ class CardKeyword(str, Enum):
     """
     Card keyword.
     """
-
     ON_REVEAL = "on_reveal"
     ONGOING = "ongoing"
     DISCARD = "discard"
@@ -26,7 +25,6 @@ class CardDB(BaseModel):
     """
     Model representing a Card.
     """
-
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
 
     name: str = Field()
@@ -61,7 +59,6 @@ class DeckDB(BaseModel):
     """
     Model representing a Deck of Cards
     """
-
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
 
     name: str = Field()
@@ -91,16 +88,22 @@ class AccessToken(BaseModel):
     username: str = Field(default=None)
 
 class Token(BaseModel):
-    """ Model for an access token. """
+    """ 
+    Model for an access token. 
+    """
     token: str = Field()
     type: str = Field()
 
 class User(BaseModel):
-    """ Model for user. """
+    """ 
+    Model for user. 
+    """
     username: str = Field()
 
 
 class UserDB(BaseModel):
-    """ Model for user in database. """
+    """
+    Model for user in database. 
+    """
     secret_password: str = Field()
 

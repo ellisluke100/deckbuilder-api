@@ -1,11 +1,12 @@
+""" 
+Endpoints relating to card resources.
+"""
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from deckbuilder.schemas import CardResponse, CardListResponse
 from deckbuilder.core.dependencies import get_cards_dep, get_card_by_id_dep
 
 router = APIRouter(prefix="/cards", tags=["cards"])
-
-# TODO - docstrings, path docs
 
 
 @router.get(
@@ -16,13 +17,12 @@ router = APIRouter(prefix="/cards", tags=["cards"])
     response_model=CardListResponse,
     response_model_by_alias=False,
 )
-async def get_cards(cards=Depends(get_cards_dep)) -> CardListResponse:
-    """ """
-    # TODO - I dont understand why I can do list[CardResponse] and then return cards, and it works vs this
+async def get_cards(cards: Annotated[CardListResponse, Depends(get_cards_dep)]) -> CardListResponse:
+    """ 
+    Get cards endpoint. 
+    """
     # ? Note: Pydantic will do ANOTHER validation / conversion to CardListResponse, because we've defined the response model AND are converting it here
     return cards
-    # return CardListResponse(cards = [CardResponse(**card.model_dump()) for card in cards])
-    # return { "cards": cards }
 
 
 @router.get(
@@ -33,6 +33,8 @@ async def get_cards(cards=Depends(get_cards_dep)) -> CardListResponse:
     response_model=CardResponse,
     response_model_by_alias=False,
 )
-async def get_card_by_id(card=Depends(get_card_by_id_dep)) -> CardResponse:
-    """ """
+async def get_card_by_id(card : Annotated[CardResponse, Depends(get_card_by_id_dep)]) -> CardResponse:
+    """ 
+    Get a card by id endpoint. 
+    """
     return card

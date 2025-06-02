@@ -6,25 +6,30 @@ client: AsyncMongoClient = None
 
 
 def get_db() -> AsyncDatabase:
-    """_summary_
+    """ Get a database connection.
 
     Returns:
-        AsyncDatabase: _description_
+        AsyncDatabase: Database connection.
     """
+    
     return client.get_database("deckbuilder")
 
 
 def mongo_startup():
-    """Open MongoDB connection"""
+    """
+    Open MongoDB connection
+    """
     global client
     client = AsyncMongoClient("mongodb://localhost:27017")
 
 
 def mongo_shutdown():
-    """Close MongoDB connection"""
+    """
+    Close MongoDB connection
+    """
     global client
     if client is None:
         return
 
     client.close()  # Smelly warning about not awaiting this
-    client = None
+    client = None # Make sure we don't try and use it again

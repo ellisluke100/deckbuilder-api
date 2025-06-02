@@ -10,14 +10,14 @@ class UserDatabaseAdapter:
         self._db = db
 
     async def read_user_by_name(self, username: str) -> Optional[UserDB]:
-        """_summary_
+        """ Read a user from the database by name
 
         Args:
-            username (str): _description_
+            username (str): User name to search for
 
         Returns:
-            Optional[UserDB]: _description_
-        """        
+            Optional[UserDB]: The retrieved user or None if the user could not be found
+        """       
         user = await self._db.get_collection("users").find_one({"name":username})
 
         return UserDB(**user) if user else None

@@ -16,15 +16,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def authenticate_user(username: str, password: str, db = Depends(get_db)) -> Optional[UserDB]:
-    """_summary_
+    """ Authenticate a user.
 
     Args:
-        username (str): _description_
-        password (str): _description_
-        db (_type_, optional): _description_. Defaults to Depends(get_db).
+        username (str): Username
+        password (str): User's password
+        db (_type_, optional): Database connection. Defaults to Depends(get_db).
 
     Returns:
-        Optional[UserDB]: _description_
+        Optional[UserDB]: The authenticated user or None if authentication failed.
     """    
     adapter = UserDatabaseAdapter(db=db)
 
@@ -42,13 +42,13 @@ async def authenticate_user(username: str, password: str, db = Depends(get_db)) 
 
 
 async def create_token(data: dict) -> Token:
-    """_summary_
+    """ Create a JWT-encoded access token.
 
     Args:
-        data (dict): _description_
+        data (dict): Data to encode as a JWT.
 
     Returns:
-        Token: _description_
+        Token: The token with encoded JWT.
     """    
     encoded_jwt = jwt.encode(
         payload={"exp":-1} | data.copy(),
@@ -62,17 +62,17 @@ async def create_token(data: dict) -> Token:
 
 
 async def get_token_dep(form = Depends(OAuth2PasswordRequestForm)) -> Token:
-    """_summary_
+    """ Get an access token for given user information.
 
     Args:
-        form (_type_, optional): _description_. Defaults to Depends(OAuth2PasswordRequestForm).
+        form (_type_, optional): User credentials form. Defaults to Depends(OAuth2PasswordRequestForm).
 
     Raises:
-        HTTPException: _description_
+        HTTPException: 401 if user failed to authenticate.
 
     Returns:
-        Token: _description_
-    """    
+        Token: The created access token.
+    """
     user = authenticate_user(form.username, form.password)
     if not user:
         raise HTTPException(

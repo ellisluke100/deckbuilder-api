@@ -9,7 +9,8 @@ mongo_address = os.getenv("MONGO_ADDR")
 client = MongoClient(mongo_address)
 db = client.get_database("deckbuilder")
 
-# ? Should I use the DB models? The database is supposed to be managed by smth else so at this level we are making our models match this
+# Should I use the DB models? The database is supposed to be managed by smth else so at this level we are making our models match this
+# No
 cards = [
     {
         "name":"Spider-Man",

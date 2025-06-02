@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from deckbuilder.schemas import DeckResponse, DeckListResponse, DeckDetailResponse
 from deckbuilder.core.dependencies import (
@@ -15,19 +15,15 @@ router = APIRouter(prefix="/decks", tags=["decks"])
 @router.get(
     "/{id}",
     description="Get a deck by it's ID",
+    response_description="The retrieved deck",
     response_model=DeckDetailResponse,
     status_code=status.HTTP_200_OK,
 )
 async def get_deck_by_id(
     deck: Annotated[DeckDetailResponse, Depends(get_deck_by_id_dep)],
 ):
-    """_summary_
-
-    Args:
-        deck (Annotated[DeckResponse, Depends): _description_
-
-    Returns:
-        _type_: _description_
+    """ 
+    Get a deck by its ID.
     """
     return deck
 
@@ -35,17 +31,13 @@ async def get_deck_by_id(
 @router.get(
     "/",
     description="Get multiple decks.",
+    response_description="List of retrieved decks.",
     response_model=DeckListResponse,
     status_code=status.HTTP_200_OK,
 )
 async def get_decks(decks: Annotated[DeckListResponse, Depends(get_decks_dep)]):
-    """_summary_
-
-    Args:
-        decks (Annotated[DeckListResponse, Depends): _description_
-
-    Returns:
-        _type_: _description_
+    """ 
+    List decks.
     """
     return decks
 
@@ -59,19 +51,30 @@ async def get_decks(decks: Annotated[DeckListResponse, Depends(get_decks_dep)]):
     response_model_by_alias=False,
 )
 async def create_deck(new_deck: Annotated[DeckResponse, Depends(create_deck_dep)]):
-    """ """
+    """ 
+    Create a new deck.
+    """
     return new_deck
 
 
 @router.delete(
-    "/{id}", description="Delete a deck.", status_code=status.HTTP_204_NO_CONTENT
+    "/{id}", 
+    description="Delete a deck.",
+    status_code=status.HTTP_204_NO_CONTENT
 )
 async def delete_deck(response=Depends(delete_deck_dep)):
-    """ """
+    """ 
+    Delete a deck.
+    """
     return response
 
 
-@router.put("/{id}", description="Update a deck.", status_code=status.HTTP_200_OK)
+@router.put("/{id}",
+             description="Update a deck.",
+             response_description="The updated deck.",
+             status_code=status.HTTP_200_OK)
 async def update_deck(deck=Depends(update_deck_dep)):
-    """ """
+    """ 
+    Update a deck.
+    """
     return deck
