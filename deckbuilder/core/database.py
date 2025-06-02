@@ -21,7 +21,9 @@ def mongo_startup():
     Open MongoDB connection
     """
     global client
-    mongo_addr = os.getenv("MONGO_ADDR", "mongodb://localhost:27017") # TODO - real config
+    mongo_addr = os.getenv(
+        "MONGO_ADDR", "mongodb://localhost:27017"
+    )  # TODO - real config
     client = AsyncMongoClient(mongo_addr)
 
 
