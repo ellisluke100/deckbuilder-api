@@ -1,5 +1,5 @@
-from deckbuilder.db.cards import CardsDatabaseAdapter
-from deckbuilder.db.decks import DeckDatabaseAdapter
+from deckbuilder.db.cards import CardsDatabase
+from deckbuilder.db.decks import DeckDatabase
 from deckbuilder.models import DeckDB
 from fastapi import Depends, HTTPException, status
 from deckbuilder.core.database import get_db
@@ -34,7 +34,7 @@ async def get_cards_dep(
     Returns:
         CardListResponse: Model for list of cards.
     """
-    adapter = CardsDatabaseAdapter(db=db)
+    adapter = CardsDatabase(db=db)
 
     results = await adapter.read_multiple(limit, skip)
 
@@ -56,7 +56,7 @@ async def get_card_by_id_dep(id: str, db=Depends(get_db)) -> CardResponse:
     Returns:
         CardResponse: Model for returning a card.
     """
-    adapter = CardsDatabaseAdapter(db=db)
+    adapter = CardsDatabase(db=db)
 
     result = await adapter.read_one(id)
 
@@ -83,7 +83,7 @@ async def get_cards_by_id(
     Returns:
         list[CardResponse]: List of card models to return.
     """
-    card_adapter = CardsDatabaseAdapter(db=db)
+    card_adapter = CardsDatabase(db=db)
 
     cards = []
     for id in card_ids:
@@ -118,7 +118,7 @@ async def get_decks_dep(
     Returns:
         DeckListResponse: List of decks.
     """
-    adapter = DeckDatabaseAdapter(db=db)
+    adapter = DeckDatabase(db=db)
 
     results = await adapter.read_multiple(limit, skip)
 
@@ -140,7 +140,7 @@ async def get_deck_by_id_dep(id: str, db=Depends(get_db)) -> DeckDetailResponse:
     Returns:
         DeckDetailResponse: Detail view of the deck retrieved.
     """
-    adapter = DeckDatabaseAdapter(db=db)
+    adapter = DeckDatabase(db=db)
 
     result = await adapter.read_one(id)
 
@@ -164,7 +164,7 @@ async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckRe
     Returns:
         DeckResponse: Deck retrieved.
     """
-    adapter = DeckDatabaseAdapter(db=db)
+    adapter = DeckDatabase(db=db)
 
     result = await adapter.create_one(DeckDB(**deck.model_dump()))
 
@@ -181,7 +181,7 @@ async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:
     Raises:
         HTTPException: 404 if the deck could not be found.
     """
-    adapter = DeckDatabaseAdapter(db=db)
+    adapter = DeckDatabase(db=db)
 
     if not (await adapter.read_one(id)):
         raise HTTPException(
@@ -210,7 +210,7 @@ async def update_deck_dep(
     Returns:
         DeckResponse: The updated Deck
     """
-    adapter = DeckDatabaseAdapter(db=db)
+    adapter = DeckDatabase(db=db)
     fields = update_fields.model_dump(exclude_unset=True)
 
     # Nothing to update; just return the found object

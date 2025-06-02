@@ -3,14 +3,12 @@ from pymongo.asynchronous.database import AsyncDatabase
 from pymongo import ReturnDocument
 from typing import Optional
 from bson import ObjectId
+from deckbuilder.db.base import BaseDatabase
 
 
-# TODO - there is an unimaginable amount of reuse here and with these 'Adapter' classes.
-
-
-class UserDatabaseAdapter:
+class UserDatabaseAdapter(BaseDatabase):
     def __init__(self, db: AsyncDatabase):
-        self._db = db
+        super().__init__(db)
 
     async def read_user_by_name(self, username: str) -> Optional[UserDB]:
         """Read a user from the database by name

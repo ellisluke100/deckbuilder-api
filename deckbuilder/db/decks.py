@@ -3,13 +3,14 @@ from pymongo.asynchronous.database import AsyncDatabase
 from pymongo import ReturnDocument
 from typing import Optional
 from bson import ObjectId
+from deckbuilder.db.base import BaseDatabase
 
 # ! What does get_collection() actually do? Am I thrashing the DB by calling that every time?
 
 
-class DeckDatabaseAdapter:
+class DeckDatabase(BaseDatabase):
     def __init__(self, db: AsyncDatabase):
-        self._db = db
+        super().__init__(db)
 
     async def read_one(self, id: str) -> Optional[DeckDB]:
         """Read a deck from the database.
@@ -20,7 +21,7 @@ class DeckDatabaseAdapter:
         Returns:
             Optional[DeckDB]: Retrieved deck or None if the deck could not be found
         """
-        result = await self._db.get_collection("decks").find_one({"_id": ObjectId(id)})
+        result = await self._read_document_by_id(id, "decks")
 
         return DeckDB(**result) if result else None
 
@@ -34,11 +35,7 @@ class DeckDatabaseAdapter:
         Returns:
             list[DeckDB]: List of decks retrieved
         """
-        results = (
-            await self._db.get_collection("decks")
-            .find(limit=limit, skip=skip)
-            .to_list()
-        )
+        results = await self._read_documents(limit, skip, "decks")
 
         return [DeckDB(**deck) for deck in results]
 
@@ -52,14 +49,12 @@ class DeckDatabaseAdapter:
         Returns:
             Optional[DeckDB]: The created deck or None if it couldn't be created.
         """
-        result = await self._db.get_collection("decks").insert_one(
-            deck.model_dump(exclude=["id"])
-        )
+        result = await self._create_document(deck.model_dump(exclude=["id"]), "decks")
 
-        if not (deck_id := result.inserted_id):
+        if not (id := result.inserted_id):
             return None
 
-        object = await self._db.get_collection("decks").find_one({"_id": deck_id})
+        object = await self._read_document_by_id(id, "decks")
 
         return DeckDB(**object)
 
@@ -72,9 +67,7 @@ class DeckDatabaseAdapter:
         Returns:
             bool: Whether the delete was successful or not
         """
-        result = await self._db.get_collection("decks").delete_one(
-            {"_id": ObjectId(id)}
-        )
+        result = await self._delete_document_by_id(id, "decks")
 
         if not result.deleted_count == 1:
             return False
@@ -91,10 +84,6 @@ class DeckDatabaseAdapter:
         Returns:
             DeckDB: The updated deck
         """
-        result = await self._db.get_collection("decks").find_one_and_update(
-            {"_id": ObjectId(id)},
-            {"$set": fields},
-            return_document=ReturnDocument.AFTER,  # Returns the bson document after its been updated
-        )
+        result = await self._update_document(id, fields, "decks")
 
         return DeckDB(**result)

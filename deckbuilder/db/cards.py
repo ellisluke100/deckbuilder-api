@@ -2,11 +2,12 @@ from deckbuilder.models import CardDB
 from pymongo.asynchronous.database import AsyncDatabase
 from typing import Optional
 from bson import ObjectId
+from deckbuilder.db.base import BaseDatabase
 
 
-class CardsDatabaseAdapter:
+class CardsDatabase(BaseDatabase):
     def __init__(self, db: AsyncDatabase):
-        self._db = db
+        super().__init__(db)
 
     async def read_one(self, id: str) -> Optional[CardDB]:
         """Read a single card from the database.
@@ -17,7 +18,7 @@ class CardsDatabaseAdapter:
         Returns:
             Optional[CardDB]: The retrieved card or None if it could not be retrieved.
         """
-        result = await self._db.get_collection("cards").find_one({"_id": ObjectId(id)})
+        result = await self._read_document_by_id(id, "cards")
 
         return CardDB(**result) if result else None
 
@@ -31,10 +32,6 @@ class CardsDatabaseAdapter:
         Returns:
             list[CardDB]: List of retrieved cards.
         """
-        results = (
-            await self._db.get_collection("cards")
-            .find(limit=limit, skip=skip)
-            .to_list()
-        )
+        results = await self._read_documents(limit, skip, "cards")
 
         return [CardDB(**card) for card in results]
