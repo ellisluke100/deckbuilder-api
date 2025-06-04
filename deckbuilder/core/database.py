@@ -1,6 +1,7 @@
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
 import os
+from deckbuilder.core.config import config
 
 
 client: AsyncMongoClient = None
@@ -21,9 +22,7 @@ def mongo_startup():
     Open MongoDB connection
     """
     global client
-    mongo_addr = os.getenv(
-        "MONGO_ADDR", "mongodb://localhost:27017"
-    )  # TODO - real config
+    mongo_addr = config.mongo_addr
     client = AsyncMongoClient(mongo_addr)
 
 
