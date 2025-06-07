@@ -11,10 +11,11 @@ from deckbuilder.schemas import (
     DeckCreateRequest,
     DeckUpdateRequest,
     DeckDetailResponse,
+    ValidId,
 )
-
-# TODO - split this file out or something
-# TODO - make reusable deps - theres a lot of code reuse in here
+from typing import Annotated
+from fastapi import Query
+from deckbuilder.schemas import QueryParameters
 
 #########
 # CARDS #
@@ -22,7 +23,7 @@ from deckbuilder.schemas import (
 
 
 async def get_cards_dep(
-    limit: int = 10, skip: int = 0, db=Depends(get_db)
+    q: Annotated[QueryParameters, Query()], db=Depends(get_db)
 ) -> CardListResponse:
     """Get cards.
 
@@ -36,14 +37,14 @@ async def get_cards_dep(
     """
     adapter = CardsDatabase(db=db)
 
-    results = await adapter.read_multiple(limit, skip)
+    results = await adapter.read_multiple(**q.model_dump())
 
     return CardListResponse(
         cards=[CardResponse(**card.model_dump()) for card in results]
     )
 
 
-async def get_card_by_id_dep(id: str, db=Depends(get_db)) -> CardResponse:
+async def get_card_by_id_dep(id: ValidId, db=Depends(get_db)) -> CardResponse:
     """Get card by it's ID.
 
     Args:
@@ -127,7 +128,7 @@ async def get_decks_dep(
     )
 
 
-async def get_deck_by_id_dep(id: str, db=Depends(get_db)) -> DeckDetailResponse:
+async def get_deck_by_id_dep(id: ValidId, db=Depends(get_db)) -> DeckDetailResponse:
     """Get a deck by it's ID.
 
     Args:
@@ -171,7 +172,7 @@ async def create_deck_dep(deck: DeckCreateRequest, db=Depends(get_db)) -> DeckRe
     return DeckResponse(**result.model_dump())
 
 
-async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:
+async def delete_deck_dep(id: ValidId, db=Depends(get_db)) -> None:
     """Delete a deck.
 
     Args:
@@ -188,14 +189,13 @@ async def delete_deck_dep(id: str, db=Depends(get_db)) -> None:
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Deck {id} not found."
         )
 
-    # ! Is this right
     await adapter.delete_one(id)
 
     return
 
 
 async def update_deck_dep(
-    id: str, update_fields: DeckUpdateRequest, db=Depends(get_db)
+    id: ValidId, update_fields: DeckUpdateRequest, db=Depends(get_db)
 ) -> DeckResponse:
     """_summary_
 
@@ -219,10 +219,9 @@ async def update_deck_dep(
 
         if not deck:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Deck {id} not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Deck {id} not found."
             )
 
-        deck = DeckDB(**deck)
         return DeckResponse(**deck.model_dump())
 
     # Update the object
@@ -230,24 +229,7 @@ async def update_deck_dep(
 
     if not updated_deck:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Deck {id} not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Deck {id} not found."
         )
 
     return DeckResponse(**updated_deck.model_dump())
-
-
-#########
-# MISC  #
-#########
-
-
-async def validate_id():
-    pass
-
-
-async def validate_card_id():
-    pass
-
-
-async def validate_deck_id():
-    pass

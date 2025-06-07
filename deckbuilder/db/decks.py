@@ -39,7 +39,6 @@ class DeckDatabase(BaseDatabase):
 
         return [DeckDB(**deck) for deck in results]
 
-    # ! I thought this should handle the db model conversion? For the deck arg
     async def create_one(self, deck: DeckDB) -> Optional[DeckDB]:
         """Create a deck in the database
 
@@ -74,7 +73,7 @@ class DeckDatabase(BaseDatabase):
 
         return True
 
-    async def update_one(self, id: str, fields: dict) -> DeckDB:
+    async def update_one(self, id: str, fields: dict) -> Optional[DeckDB]:
         """Update a deck in the database
 
         Args:
@@ -86,4 +85,4 @@ class DeckDatabase(BaseDatabase):
         """
         result = await self._update_document(id, fields, "decks")
 
-        return DeckDB(**result)
+        return DeckDB(**result) if result else None

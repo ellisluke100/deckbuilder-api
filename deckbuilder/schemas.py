@@ -1,8 +1,12 @@
-from pydantic import BaseModel, Field, ConfigDict, Secret
+from pydantic import BaseModel, Field, ConfigDict, AfterValidator
 from deckbuilder.models import CardKeyword
 from bson import ObjectId
+from typing import Annotated
+from deckbuilder.core.utils import is_valid_object_id
 
 # We need some base classes here pleeassee
+
+ValidId = Annotated[str, AfterValidator(is_valid_object_id)]
 
 #########
 # Cards #
@@ -32,6 +36,16 @@ class CardListResponse(BaseModel):
     cards: list[CardResponse]
 
 
+class QueryParameters(BaseModel):
+    limit: int = Field(default=10)
+    skip: int = Field(default=0)
+    keywords: list[CardKeyword] = Field(default=[])
+
+
+class CardQueryParameters(QueryParameters):
+    keywords: list[CardKeyword] = []
+
+
 #########
 # Decks #
 #########
@@ -52,7 +66,7 @@ class DeckUpdateRequest(BaseModel):
     """
 
     name: str = Field(default=None)  # Rename
-    cards: list[str] = Field(
+    cards: list[ValidId] = Field(
         max_length=6, default=[]
     )  # Change cards that are in the deck
 

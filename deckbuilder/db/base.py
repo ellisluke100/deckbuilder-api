@@ -15,6 +15,7 @@ class BaseDatabase:
         self._db = db
 
     # ! Should this actually be generic in the sense of it can be any field not just id
+    # ! ID is a very common use case though so can mind it for you
     async def _read_document_by_id(self, id: str, collection: str) -> Optional[dict]:
         """Retrieve a document from the collection by its ID
 
@@ -27,7 +28,6 @@ class BaseDatabase:
         """
         return await self._db.get_collection(collection).find_one({"_id": ObjectId(id)})
 
-    # TODO - query params should probably be an object or similar (not defined willy nilly in every function)
     async def _read_documents(
         self, limit: int, skip: int, collection: str
     ) -> list[dict]:
@@ -88,7 +88,7 @@ class BaseDatabase:
         Returns:
             Optional[dict]: The updated document or None if it couldn't update
         """
-        return self._db.get_collection(collection).find_one_and_update(
+        return await self._db.get_collection(collection).find_one_and_update(
             {"_id": ObjectId(id)},
             {"$set": fields},
             return_document=ReturnDocument.AFTER,  # Returns the bson document after its been updated - maybe this should be configurable?

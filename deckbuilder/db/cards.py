@@ -1,7 +1,6 @@
 from deckbuilder.models import CardDB
 from pymongo.asynchronous.database import AsyncDatabase
 from typing import Optional
-from bson import ObjectId
 from deckbuilder.db.base import BaseDatabase
 
 
@@ -22,7 +21,9 @@ class CardsDatabase(BaseDatabase):
 
         return CardDB(**result) if result else None
 
-    async def read_multiple(self, limit: int, skip: int) -> list[CardDB]:
+    async def read_multiple(
+        self, limit: int, skip: int, keywords: list[str]
+    ) -> list[CardDB]:
         """Read multiple cards from the database.
 
         Args:
