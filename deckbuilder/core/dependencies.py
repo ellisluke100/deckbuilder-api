@@ -15,7 +15,7 @@ from deckbuilder.schemas import (
 )
 from typing import Annotated
 from fastapi import Query
-from deckbuilder.schemas import CardQueryParameters
+from deckbuilder.schemas import CommonQueryParameters, CardQueryParameters
 
 #########
 # CARDS #
@@ -107,7 +107,7 @@ async def get_cards_by_id(
 
 
 async def get_decks_dep(
-    limit: int = 10, skip: int = 0, db=Depends(get_db)
+    q: Annotated[CommonQueryParameters, Query()], db=Depends(get_db)
 ) -> DeckListResponse:
     """Get decks.
 
@@ -121,7 +121,7 @@ async def get_decks_dep(
     """
     adapter = DeckDatabase(db=db)
 
-    results = await adapter.read_multiple(limit, skip)
+    results = await adapter.read_multiple(**q.model_dump())
 
     return DeckListResponse(
         decks=[DeckResponse(**deck.model_dump()) for deck in results]

@@ -35,7 +35,8 @@ class DeckDatabase(BaseDatabase):
         Returns:
             list[DeckDB]: List of decks retrieved
         """
-        results = await self._read_documents(limit, skip, "decks")
+        query = {}
+        results = await self._read_documents(limit, skip, query, "decks")
 
         return [DeckDB(**deck) for deck in results]
 
