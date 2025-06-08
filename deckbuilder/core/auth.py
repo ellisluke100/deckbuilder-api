@@ -32,7 +32,7 @@ async def authenticate_user(
     """
     adapter = UserDatabaseAdapter(db=db)
 
-    user = adapter.read_user_by_name(username)
+    user = await adapter.read_user_by_name(username)
 
     # Check if user exists
     if not user:

@@ -36,14 +36,13 @@ class CardListResponse(BaseModel):
     cards: list[CardResponse]
 
 
-class QueryParameters(BaseModel):
+class CommonQueryParameters(BaseModel):
     limit: int = Field(default=10)
     skip: int = Field(default=0)
+
+
+class CardQueryParameters(CommonQueryParameters):
     keywords: list[CardKeyword] = Field(default=[])
-
-
-class CardQueryParameters(QueryParameters):
-    keywords: list[CardKeyword] = []
 
 
 #########
@@ -51,13 +50,15 @@ class CardQueryParameters(QueryParameters):
 #########
 
 
-class DeckCreateRequest(BaseModel):
+class DeckBase(BaseModel):
+    name: str = Field()
+    cards: list[ValidId] = Field(max_length=6, default=[])  # List of IDs
+
+
+class DeckCreateRequest(DeckBase):
     """
     Schema for creating a Deck.
     """
-
-    name: str = Field()
-    cards: list[str] = Field(max_length=6, default=[])  # List of IDs
 
 
 class DeckUpdateRequest(BaseModel):

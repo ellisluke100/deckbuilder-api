@@ -29,7 +29,7 @@ class BaseDatabase:
         return await self._db.get_collection(collection).find_one({"_id": ObjectId(id)})
 
     async def _read_documents(
-        self, limit: int, skip: int, collection: str
+        self, limit: int, skip: int, query: dict, collection: str
     ) -> list[dict]:
         """Retrieve multiple documents according to query parameters and pagination
 
@@ -43,7 +43,7 @@ class BaseDatabase:
         """
         return (
             await self._db.get_collection(collection)
-            .find()
+            .find(query)
             .limit(limit)
             .skip(skip)
             .to_list()

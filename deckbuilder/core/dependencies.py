@@ -15,7 +15,7 @@ from deckbuilder.schemas import (
 )
 from typing import Annotated
 from fastapi import Query
-from deckbuilder.schemas import QueryParameters
+from deckbuilder.schemas import CardQueryParameters
 
 #########
 # CARDS #
@@ -23,7 +23,7 @@ from deckbuilder.schemas import QueryParameters
 
 
 async def get_cards_dep(
-    q: Annotated[QueryParameters, Query()], db=Depends(get_db)
+    q: Annotated[CardQueryParameters, Query()], db=Depends(get_db)
 ) -> CardListResponse:
     """Get cards.
 
@@ -37,7 +37,7 @@ async def get_cards_dep(
     """
     adapter = CardsDatabase(db=db)
 
-    results = await adapter.read_multiple(**q.model_dump())
+    results = await adapter.read_multiple(**q.model_dump())  # I hate this
 
     return CardListResponse(
         cards=[CardResponse(**card.model_dump()) for card in results]
