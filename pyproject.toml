@@ -6,7 +6,7 @@ authors = [
     {name = "Luke"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13, <4.0"
 dependencies = [
     "fastapi (>=0.115.12,<0.116.0)",
     "python-multipart (>=0.0.20,<0.0.21)",
@@ -23,6 +23,10 @@ dependencies = [
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 black = "^25.1.0"
+mongomock = "^4.3.0"
+httpx = "^0.28.1"
+pytest-asyncio = "^1.0.0"
+mongomock-motor = "^0.0.36"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
